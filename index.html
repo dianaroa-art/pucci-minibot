@@ -2,99 +2,55 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>NZXT Pucci MiniBot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pucci Minibot</title>
   <style>
     body {
-      margin: 0;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
+      justify-content: center;
       height: 100vh;
-      background: black;
+      margin: 0;
       font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
     }
-    .pucci-container {
-      position: relative;
-      width: 280px;
-      height: 280px;
-      border-radius: 50%;
-      background: #222;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
+    #pucci {
+      width: 300px;
+      height: auto;
+      margin-bottom: 20px;
     }
-    .pucci-img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-    }
-    .speech-bubble {
-      position: absolute;
-      top: -60px;
+    #bubble {
+      padding: 12px 18px;
       background: white;
-      color: black;
-      padding: 8px 12px;
       border-radius: 16px;
-      font-size: 18px;
-      white-space: nowrap;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-      transition: opacity 0.5s;
-    }
-    .speech-bubble::after {
-      content: "";
-      position: absolute;
-      bottom: -10px;
-      left: 30px;
-      border-width: 10px;
-      border-style: solid;
-      border-color: white transparent transparent transparent;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      font-size: 1.2rem;
+      text-align: center;
+      max-width: 400px;
     }
   </style>
 </head>
 <body>
-  <div class="pucci-container">
-    <img id="pucci" class="pucci-img" src="images/pucci_happy.png" alt="Pucci">
-    <div class="speech-bubble" id="bubble">I’m cozy!</div>
-  </div>
+  <img id="pucci" src="images/2021_Banner_Puccis_12.png" alt="Pucci minibot">
+  <div id="bubble">Hello, I’m Pucci! 👋</div>
 
   <script>
     const pucci = document.getElementById("pucci");
     const bubble = document.getElementById("bubble");
 
-    function updatePucci(temp) {
-      if (temp < 40) {
-        pucci.src = "images/pucci_happy.png";
-        bubble.innerText = "I’m cozy!";
-      } else if (temp >= 40 && temp < 55) {
-        pucci.src = "images/pucci_curious.png";
-        bubble.innerText = "Hmm... getting warmer?";
-      } else {
-        pucci.src = "images/pucci_hot.png";
-        bubble.innerText = "Phew, it’s hot!";
-      }
-      bubble.style.opacity = "1";
-      setTimeout(() => bubble.style.opacity = "0", 3000);
-    }
+    const states = [
+      { img: "images/2021_Banner_Puccis_12.png", text: "I’m happy today! 😄" },
+      { img: "images/2022_Brand_guide_Pucci_8.png", text: "It’s getting hot here 🥵" },
+      { img: "images/2021_Welcome_Box_Pucci_7.png", text: "I’m curious about your Kraken Elite 🔧" }
+    ];
 
-    // CAM integration
-    if (window.camAPI) {
-      window.camAPI.onMonitoringDataUpdate((data) => {
-        const liquid = data.liquidTemperature;
-        const cpu = data.cpuTemperature;
-        const gpu = data.gpuTemperature;
-
-        let chosenTemp = liquid || cpu || gpu || 0;
-        updatePucci(chosenTemp);
-      });
-    } else {
-      // Debug mode: cycle temps
-      let temp = 30;
-      setInterval(() => {
-        updatePucci(temp);
-        temp = temp < 60 ? temp + 15 : 30;
-      }, 5000);
-    }
+    let current = 0;
+    setInterval(() => {
+      current = (current + 1) % states.length;
+      pucci.src = states[current].img;
+      bubble.innerText = states[current].text;
+    }, 3000);
   </script>
 </body>
 </html>

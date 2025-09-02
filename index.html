@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NZXT Pucci MiniBot</title>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: black;
+      font-family: Arial, sans-serif;
+    }
+    .pucci-container {
+      position: relative;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: #222;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+    .pucci-img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    .speech-bubble {
+      position: absolute;
+      top: -60px;
+      background: white;
+      color: black;
+      padding: 8px 12px;
+      border-radius: 16px;
+      font-size: 18px;
+      white-space: nowrap;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      transition: opacity 0.5s;
+    }
+    .speech-bubble::after {
+      content: "";
+      position: absolute;
+      bottom: -10px;
+      left: 30px;
+      border-width: 10px;
+      border-style: solid;
+      border-color: white transparent transparent transparent;
+    }
+  </style>
+</head>
+<body>
+  <div class="pucci-container">
+    <img id="pucci" class="pucci-img" src="images/pucci_happy.png" alt="Pucci">
+    <div class="speech-bubble" id="bubble">I’m cozy!</div>
+  </div>
+
+  <script>
+    const pucci = document.getElementById("pucci");
+    const bubble = document.getElementById("bubble");
+
+    function updatePucci(temp) {
+      if (temp < 40) {
+        pucci.src = "images/pucci_happy.png";
+        bubble.innerText = "I’m cozy!";
+      } else if (temp >= 40 && temp < 55) {
+        pucci.src = "images/pucci_curious.png";
+        bubble.innerText = "Hmm... getting warmer?";
+      } else {
+        pucci.src = "images/pucci_hot.png";
+        bubble.innerText = "Phew, it’s hot!";
+      }
+      bubble.style.opacity = "1";
+      setTimeout(() => bubble.style.opacity = "0", 3000);
+    }
+
+    // CAM integration
+    if (window.camAPI) {
+      window.camAPI.onMonitoringDataUpdate((data) => {
+        const liquid = data.liquidTemperature;
+        const cpu = data.cpuTemperature;
+        const gpu = data.gpuTemperature;
+
+        let chosenTemp = liquid || cpu || gpu || 0;
+        updatePucci(chosenTemp);
+      });
+    } else {
+      // Debug mode: cycle temps
+      let temp = 30;
+      setInterval(() => {
+        updatePucci(temp);
+        temp = temp < 60 ? temp + 15 : 30;
+      }, 5000);
+    }
+  </script>
+</body>
+</html>
